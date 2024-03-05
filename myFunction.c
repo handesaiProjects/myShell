@@ -99,12 +99,39 @@ void getLocation() {
     }
 }
 
-void logout(char *input)
-{
+void logout(char *input) {
+    // Trim leading spaces
+    while(isspace((unsigned char)*input)) input++;
+
+    // Check if the first word is "exit"
+    if (strncmp(input, "exit", 4) == 0) {
+        char *next_char = input + 4;
+
+        // Check if "exit" is followed by spaces or end of string
+        if (*next_char == '\0' || isspace((unsigned char)*next_char)) {
+            // If there's more text after "exit", ensure it's only spaces
+            while(*next_char != '\0') {
+                if (!isspace((unsigned char)*next_char)) {
+                    printf("Invalid command. To exit, type 'exit' without additional text.\n");
+                    free(input);
+                    return;
+                }
+                next_char++;
+            }
+
+            // If only "exit" or "exit" followed by spaces, perform logout
+            free(input);
+            puts("Logging out...");
+            exit(EXIT_SUCCESS);
+        }
+    }
+
+    // If input is not "exit" or "exit" with spaces, do not exit
+    printf("Invalid command. To exit, type 'exit' without additional text.\n");
     free(input);
-    puts("log out");
-    exit(EXIT_SUCCESS); // EXIT_SUCCESS = 0
 }
+
+
 void echo(char **arg)
 {
     // int i = 1;
