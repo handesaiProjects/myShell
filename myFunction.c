@@ -151,20 +151,36 @@ void echo(char **arg)
 }
 // יש לטפל במקרים בהם מקבלים נתיב המכיל רווחים, תזכרו - נתיב כזה צריך להיות מסומן בגרשיים ולכן יש לוודא זאת ואם הוא אכן כזה
 // שמכיל סוגריים אז יש לבנות מחרוזת חדשה שאותה יש לשלוח לפונקציה שמשנה נתיב לתהליך.
-void cd(char **arg)
-{
-    if (strncmp(arg[1], "\"", 1) != 0 && arg[2] != NULL)
-        puts("-myShell: cd: too many arguments");
-    else if (strncmp(arg[1], "\"", 1) == 0)
-    {
-        // input =  cd "OneDrive - Ariel University"\0
-        // [cd, "OneDrive, - , Ariel, University", NULL]
-        if (chdir(arg[1]) != 0)
+void cd(char **arg) {
+    // If the first argument starts with a quote, we need to handle spaces in the path.
+    if (arg[1][0] == '\"') {
+        char path[BUFF_SIZE] = "";
+        int i = 1;
+        // Concatenate all parts of the path until we find an argument that ends with a quote.
+        while (arg[i] != NULL && arg[i][strlen(arg[i]) - 1] != '\"') {
+            strcat(path, arg[i]);
+            strcat(path, " ");  // Add space between parts
+            i++;
+        }
+        // Add the last part of the path (the one that ends with a quote).
+        if (arg[i] != NULL) {
+            strcat(path, arg[i]);
+        }
+        // Remove the quotes from the beginning and the end of the path.
+        memmove(path, path+1, strlen(path));
+        path[strlen(path) - 1] = '\0';
+        // Change the directory
+        if (chdir(path) != 0) {
+            printf("-myShell: cd: %s: No such file or directory\n", path);
+        }
+    } else {
+        // Handle normal path (without spaces or quotes).
+        if (arg[1] != NULL && chdir(arg[1]) != 0) {
             printf("-myShell: cd: %s: No such file or directory\n", arg[1]);
+        }
     }
-    if (chdir(arg[1]) != 0)
-        printf("-myShell: cd: %s: No such file or directory\n", arg[1]);
 }
+
 
 void cp(char **arguments)
 {
