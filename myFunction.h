@@ -39,3 +39,9 @@ char* getInputFromUser();
 char** splitArgument(char*);
 
 void getLocation();
+
+void logout(char*);
+void echo(char **);
+void cd(char **);
+void cp(char **);
+void get_dir();

@@ -3,40 +3,26 @@
 
 int main()
 {
+    
     welcome();
-
     while (1)
     {
         getLocation();
         char *input = getInputFromUser();
-        // cp\0<file>\0<file>\0
-        // cp <file> <file>\0
-        // [cp, <file>, <file> ]
-        // [input,input+3,input+10]
-
-        char **arg = splitArgument(input);
-        int i = 0;
-        while (*(arg + i) != NULL)
-        {
-            puts(arg[i]);
-            i++;
-        }
-
-        if (strcmp(input, "exit") == 0)
-        {
-            free(arg);
-            free(input);
-            puts("log out");
-            break;
-        }
-
-
-
-        
-        free(arg);
+        if (strcmp(input, "exit") == 0 || strncmp(input, "exit ", 5) == 0)
+            logout(input);
+        char **arguments = splitArgument(input);
+        if (strcmp(input, "echo") == 0)
+            echo(arguments);
+        else if (strcmp(input, "cd") == 0)
+            cd(arguments);
+        else if (strcmp(input, "cp") == 0)
+            cp(arguments);
+        free(arguments);
         free(input);
+
     }
-    return 0;
+    return 1;
 }
 
 
