@@ -43,22 +43,33 @@ char **splitArgument(char *str)
 // בפונקציה הנ"ל קיבלנו את הנתיב ממנו אנחנו מריצים את התוכנית שלנו
 //  עליכם לשדרג את הנראות של הנתיב כך ש-בתחילת הנתיב יופיע שם המחשב (כמו בטרמינל המקורי) בסוף יופיע הסימן דולר
 //  ולאחר הדולר ניתן אפשרות למשתמש להזין מחרוזת מבלי שנרד שורה.
-void getLocation()
-{
+void getLocation() {
     char location[BUFF_SIZE];
+    char hostname[BUFF_SIZE];
+    char* username = getenv("USER");
 
-    if (getcwd(location, BUFF_SIZE) == NULL)
-    {
-        puts("Error");
+    if (username == NULL) {
+        puts("Error retrieving username");
+        return;
     }
-    else
-    {
-        bold();
-        blue();
-        puts(location);
-        reset();
+
+    if (getcwd(location, BUFF_SIZE) == NULL || gethostname(hostname, BUFF_SIZE) != 0) {
+        puts("Error retrieving location or hostname");
+    } else {
+            green();
+            printf("%s@%s", username, hostname);
+            reset();
+            printf("%s", ":");
+            blue();
+            printf("~%s", location);
+            reset();
+            printf("%s", "$ ");
+            reset();
+
+
     }
 }
+
 
 
 // בכל שינוי יש לבצע קומיט מתאים העבודה מחייבת עבודה עם גיט.
