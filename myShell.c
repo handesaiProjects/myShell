@@ -38,26 +38,32 @@ int main()
     }
     return 0;
 }
-// יש לכתוב את פונקציית הברוכים הבאים כרצונכם אבל קצת יותר ממה שמוצג מטה לדוגמא:
-//                     aSPY//YASa       
-//              apyyyyCY//////////YCa       |
-//             sY//////YSpcs  scpCY//Pp     | Welcome to myShell
-//  ayp ayyyyyyySCP//Pp           syY//C    | Version 2.4.3
-//  AYAsAYYYYYYYY///Ps              cY//S   |
-//          pCCCCY//p          cSSps y//Y   | https://github.com/<user>
-//          SPPPP///a          pP///AC//Y   |
-//               A//A            cyP////C   | Have fun!
-//               p///Ac            sC///a   |
-//               P////YCpc           A//A   | Craft packets like it is your last
-//        scccccp///pSP///p          p//Y   | day on earth.
-//       sY/////////y  caa           S//P   |                      -- Lao-Tze
-//        cayCyayP//Ya              pY/Ya   |
-//         sY/PsY////YCc          aC//Yp 
-//          sc  sccaCY//PCypaapyCP//YSs  
-//                   spCPY//////YPSps    
-//                        ccaacs         
-//                                        using c                                    using c
+
+
 void welcome()
 {
-    puts("Welcome to my Shell");
+    const char* welcome_message[] = {
+        "                     aSPY//YASa",
+        "              apyyyyCY//////////YCa       |",
+        "             sY//////YSpcs  scpCY//Pp     | Welcome to myShell",
+        "  ayp ayyyyyyySCP//Pp           syY//C    | Version 1.0",
+        "  AYAsAYYYYYYYY///Ps              cY//S   |",
+        "          pCCCCY//p          cSSps y//Y   | https://github.com/handesaiProjects/myShell",
+        "          SPPPP///a          pP///AC//Y   |",
+        "               A//A            cyP////C   | Have fun?",
+        "               p///Ac            sC///a   |",
+        "               P////YCpc           A//A   | The best shell you never used",
+        "        scccccp///pSP///p          p//Y   | and you never will",
+        "       sY/////////y  caa           S//P   |                      -- unknown",
+        "        cayCyayP//Ya              pY/Ya   |",
+        "         sY/PsY////YCc          aC//Yp  ",
+        "          sc  sccaCY//PCypaapyCP//YSs   ",
+        "                   spCPY//////YPSps     ",
+        "                        ccaacs          "
+    };
+
+    // Loop through welcome messages and print them one at a time
+    for (size_t i = 0; i < sizeof(welcome_message)/sizeof(*welcome_message); ++i) {
+        puts(welcome_message[i]);
+    }
 }
