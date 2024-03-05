@@ -182,28 +182,82 @@ void cd(char **arg) {
 }
 
 
-void cp(char **arguments)
-{
-    char ch;
-    FILE *src, *des;
-    if ((src = fopen(arguments[1], "r")) == NULL)
-    {
-        puts("Erorr");
-        return;
+void cp(char **arguments) {
+    char srcPath[BUFF_SIZE] = "";
+    char destPath[BUFF_SIZE] = "";
+    int i = 1;
+
+    // Handle source path with potential spaces
+    if (arguments[i][0] == '\"') {
+        // Concatenate all parts of the path until we find an argument that ends with a quote
+        while (arguments[i] != NULL && arguments[i][strlen(arguments[i]) - 1] != '\"') {
+            strcat(srcPath, arguments[i]);
+            strcat(srcPath, " "); // Add space between parts
+            i++;
+        }
+        // Add the last part of the path (the one that ends with a quote)
+        if (arguments[i] != NULL) {
+            strcat(srcPath, arguments[i]);
+            // Remove the quotes from the beginning and the end of the path
+            memmove(srcPath, srcPath + 1, strlen(srcPath));
+            srcPath[strlen(srcPath) - 1] = '\0';
+        }
+        i++; // Move to next argument
+    } else {
+        strcpy(srcPath, arguments[i++]);
     }
-    if ((des = fopen(arguments[2], "w")) == NULL)
-    {
-        puts("Erorr");
-        fclose(src);
+
+    // Handle destination path with potential spaces
+    if (arguments[i][0] == '\"') {
+        while (arguments[i] != NULL && arguments[i][strlen(arguments[i]) - 1] != '\"') {
+            strcat(destPath, arguments[i]);
+            strcat(destPath, " "); // Add space between parts
+            i++;
+        }
+        if (arguments[i] != NULL) {
+            strcat(destPath, arguments[i]);
+            // Remove the quotes from the beginning and the end of the path
+            memmove(destPath, destPath + 1, strlen(destPath));
+            destPath[strlen(destPath) - 1] = '\0';
+        }
+    } else {
+        strcpy(destPath, arguments[i]);
+    }
+
+    // Check if the source and destination are the same
+    if (strcmp(srcPath, destPath) == 0) {
+        printf("cp: '%s' and '%s' are the same file\n", srcPath, destPath);
         return;
     }
 
-    while((ch=fgetc(src))!=EOF){
-        fputc(ch,des);
+    // Attempt to open the source file
+    FILE *src = fopen(srcPath, "r");
+    if (src == NULL) {
+        printf("cp: cannot open '%s' for reading: No such file or directory\n", srcPath);
+        return;
     }
+
+    // Attempt to open/create the destination file
+    FILE *dest = fopen(destPath, "w");
+    if (dest == NULL) {
+        fclose(src);
+        printf("cp: cannot create '%s': No such file or directory\n", destPath);
+        return;
+    }
+
+    // Copy the content from source to destination
+    char ch;
+    while ((ch = fgetc(src)) != EOF) {
+        fputc(ch, dest);
+    }
+
+    // Close the files
     fclose(src);
-    fclose(des);
+    fclose(dest);
+    printf("File '%s' successfully copied to '%s'\n", srcPath, destPath);
 }
+
+
 // בכל שינוי יש לבצע קומיט מתאים העבודה מחייבת עבודה עם גיט.
 // ניתן להוסיף פונקציות עזר לתוכנית רק לשים לב שלא מוסיפים את חתימת הפונקציה לקובץ הכותרות
 
