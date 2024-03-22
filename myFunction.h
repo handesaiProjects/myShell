@@ -48,3 +48,4 @@ void delete(char **);
 void systemCall(char **);
 void mypipe(char **, char **);
 void move(char **);
+void echoppend(char **);

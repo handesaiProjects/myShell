@@ -252,6 +252,44 @@ void move(char **args) {
         printf("move: failed to copy '%s' to '%s'\n", args[1], args[2]);
     }
 }
+void echoppend(char **args) {
+    // Check if the correct number of arguments are passed
+    if (args[1] == NULL || args[2] == NULL) {
+        printf("echoppend: missing required arguments\n");
+        return;
+    }
+
+    // Open the file in append mode, create if it doesn't exist
+    FILE *file = fopen(args[2], "a");
+    if (file == NULL) {
+        printf("echoppend: cannot open or create '%s'\n", args[2]);
+        return;
+    }
+
+    // Write the string to the file
+    fprintf(file, "%s\n", args[1]);
+
+    // Close the file after appending
+    fclose(file);
+
+    // Re-open the file in read mode to print its contents
+    file = fopen(args[2], "r");
+    if (file == NULL) {
+        printf("echoppend: cannot open '%s' for reading\n", args[2]);
+        return;
+    }
+
+    // Read and print the file contents
+    char buffer[1024];
+    while (fgets(buffer, sizeof(buffer), file) != NULL) {
+        printf("%s", buffer);
+    }
+
+    // Close the file after reading
+    fclose(file);
+}
+
+
 
 // בכל שינוי יש לבצע קומיט מתאים העבודה מחייבת עבודה עם גיט.
 // ניתן להוסיף פונקציות עזר לתוכנית רק לשים לב שלא מוסיפים את חתימת הפונקציה לקובץ הכותרות

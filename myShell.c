@@ -14,9 +14,13 @@ int main()
 
         // Check for piping
         int piping = -1;
+        int appendToFile = -1; // Index for ">>"
         for (int i = 0; arguments[i] != NULL; i++) {
             if (strcmp(arguments[i], "|") == 0) {
                 piping = i;
+                break;
+            } else if (strcmp(arguments[i], ">>") == 0) {
+                appendToFile = i;
                 break;
             }
         }
@@ -27,6 +31,30 @@ int main()
             char **argv2 = arguments + piping + 1;
             mypipe(argv1, argv2);
             wait(NULL);
+        } else if (appendToFile != -1 && strcmp(arguments[0], "echo") == 0) {
+            // Ensure there is a command before ">>" and a file path after
+            if (arguments[1] != NULL && arguments[appendToFile + 1] != NULL) {
+                // Reconstruct the string to append from the arguments before ">>"
+                char *toAppend = NULL;
+                int length = 0;
+                for (int i = 1; i < appendToFile; i++) { // Start from 1 to skip "echo"
+                    length += strlen(arguments[i]) + 1; // +1 for space or null terminator
+                }
+                toAppend = malloc(length);
+                if (toAppend) {
+                    toAppend[0] = '\0'; // Initialize to empty string
+                    for (int i = 1; i < appendToFile; i++) { // Start from 1 to skip "echo"
+                        strcat(toAppend, arguments[i]);
+                        if (i < appendToFile - 1) strcat(toAppend, " "); // Add space between arguments
+                    }
+                    // Call echoppend with the reconstructed string and the file path
+                    char *argsForEchoppend[] = {NULL, toAppend, arguments[appendToFile + 1], NULL};
+                    echoppend(argsForEchoppend);
+                    free(toAppend);
+                }
+            } else {
+                printf("Syntax error near '>>'\n");
+            }
         } else if (strcmp(arguments[0], "echo") == 0)
             echo(arguments);
         else if (strcmp(arguments[0], "cd") == 0)
