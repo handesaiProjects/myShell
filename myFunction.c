@@ -232,5 +232,26 @@ void mypipe(char **argv1, char **argv2)
 }
 
 
+void move(char **args) {
+    // Check if the correct number of arguments are passed
+    if (args[1] == NULL || args[2] == NULL) {
+        printf("move: missing file operand\n");
+        return;
+    }
+
+    // Copy the file to the new location
+    cp(args);
+
+    // If the copy is successful, delete the original file
+    // Note: It's important to check if the copy was successful to avoid data loss
+    FILE *file = fopen(args[1], "r");
+    if (file != NULL) {
+        fclose(file);
+        delete(args);
+    } else {
+        printf("move: failed to copy '%s' to '%s'\n", args[1], args[2]);
+    }
+}
+
 // בכל שינוי יש לבצע קומיט מתאים העבודה מחייבת עבודה עם גיט.
 // ניתן להוסיף פונקציות עזר לתוכנית רק לשים לב שלא מוסיפים את חתימת הפונקציה לקובץ הכותרות

@@ -35,6 +35,8 @@ int main()
             cp(arguments);
         else if (strcmp(arguments[0], "delete") == 0)
             delete(arguments);
+        else if (strcmp(arguments[0], "move") == 0)
+            move(arguments);
         else {
             systemCall(arguments);
             wait(NULL);

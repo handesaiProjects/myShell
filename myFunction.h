@@ -47,3 +47,4 @@ void get_dir();
 void delete(char **);
 void systemCall(char **);
 void mypipe(char **, char **);
+void move(char **);
