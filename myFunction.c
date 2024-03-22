@@ -257,9 +257,49 @@ void cp(char **arguments) {
     printf("File '%s' successfully copied to '%s'\n", srcPath, destPath);
 }
 
+void delete(char **path)
+{
+    if (unlink(path[1]) != 0)
+        printf("-myShell: path: %s: No such file or directory\n", path[1]);
+}
+void systemCall(char **arg)
+{
 
-// בכל שינוי יש לבצע קומיט מתאים העבודה מחייבת עבודה עם גיט.
-// ניתן להוסיף פונקציות עזר לתוכנית רק לשים לב שלא מוסיפים את חתימת הפונקציה לקובץ הכותרות
+    pid_t pid = fork();
+    if (pid == -1)
+    {
+        printf("fork err\n");
+        return;
+    }
+    if (pid == 0 && execvp(arg[0], arg) == -1)
+        exit(1);
+}
+void mypipe(char **argv1, char **argv2)
+{
+    int fildes[2];
+    if (fork() == 0)
+    {
+        pipe(fildes);
+        if (fork() == 0)
+        {
+            /* first component of command line */
+            close(STDOUT_FILENO);
+            dup(fildes[1]);
+            close(fildes[1]);
+            close(fildes[0]);
+            /* stdout now goes to pipe */
+            /* child process does command */
+            execvp(argv1[0], argv1);
+        }
+        /* 2nd command component of command line */
+        close(STDIN_FILENO);
+        dup(fildes[0]);
+        close(fildes[0]);
+        close(fildes[1]);
+        /* standard input now comes from pipe */
+        execvp(argv2[0], argv2);
+    }
+}
 
 
 // בכל שינוי יש לבצע קומיט מתאים העבודה מחייבת עבודה עם גיט.
