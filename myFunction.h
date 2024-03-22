@@ -51,3 +51,4 @@ void move(char **);
 void echoppend(char **);
 void echorite(char **);
 void readfile(char **);
+void wordCount(char **);

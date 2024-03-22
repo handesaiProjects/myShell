@@ -346,6 +346,43 @@ void readfile(char **args) {
     fclose(file);
 }
 
+void wordCount(char **args) {
+    if (args[1] == NULL || args[2] == NULL) {
+        printf("wordCount: missing required arguments\n");
+        return;
+    }
+
+    // Check if the option is -l (lines) or -w (words)
+    if (strcmp(args[1], "-l") != 0 && strcmp(args[1], "-w") != 0) {
+        printf("wordCount: invalid option %s\n", args[1]);
+        printf("Usage: wordCount -l|-w <file_path>\n");
+        return;
+    }
+
+    FILE *file = fopen(args[2], "r");
+    if (file == NULL) {
+        // If the file doesn't exist, silently return without printing anything
+        return;
+    }
+
+    int count = 0;
+    char buffer[1024];
+    if (strcmp(args[1], "-l") == 0) {
+        // Count lines
+        while (fgets(buffer, sizeof(buffer), file) != NULL) {
+            count++;
+        }
+        printf("Lines: %d\n", count);
+    } else if (strcmp(args[1], "-w") == 0) {
+        // Count words
+        while (fscanf(file, "%1023s", buffer) == 1) {
+            count++;
+        }
+        printf("Words: %d\n", count);
+    }
+
+    fclose(file);
+}
 
 
 // בכל שינוי יש לבצע קומיט מתאים העבודה מחייבת עבודה עם גיט.

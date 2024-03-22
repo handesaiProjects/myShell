@@ -53,6 +53,8 @@ int main()
             move(arguments);
         else if (strcmp(arguments[0], "read") == 0)
             readfile(arguments);
+        else if (strcmp(arguments[0], "wc") == 0)
+            wordCount(arguments);
         else {
             systemCall(arguments);
             wait(NULL);
