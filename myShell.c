@@ -3,32 +3,39 @@
 
 int main()
 {
-
     welcome();
     while (1)
     {
-        int piping = 0;
         getLocation();
         char *input = getInputFromUser();
         if (strcmp(input, "exit") == 0 || strncmp(input, "exit ", 5) == 0)
             logout(input);
         char **arguments = splitArgument(input);
-        if (strcmp(input, "echo") == 0)
-            echo(arguments);
-        else if (strcmp(input, "cd") == 0)
-            cd(arguments);
-        else if (strcmp(input, "cp") == 0)
-            cp(arguments);
-        else if (strcmp(input, "delete") == 0)
-            delete (arguments);
-        else if (piping)
-        {
-            arguments[piping] = NULL;
-            mypipe(arguments, arguments + piping + 1);
-            wait(NULL);
+
+        // Check for piping
+        int piping = -1;
+        for (int i = 0; arguments[i] != NULL; i++) {
+            if (strcmp(arguments[i], "|") == 0) {
+                piping = i;
+                break;
+            }
         }
-        else
-        {
+
+        if (piping != -1) {
+            arguments[piping] = NULL; // Split the arguments array into two NULL-terminated arrays
+            char **argv1 = arguments;
+            char **argv2 = arguments + piping + 1;
+            mypipe(argv1, argv2);
+            wait(NULL);
+        } else if (strcmp(arguments[0], "echo") == 0)
+            echo(arguments);
+        else if (strcmp(arguments[0], "cd") == 0)
+            cd(arguments);
+        else if (strcmp(arguments[0], "cp") == 0)
+            cp(arguments);
+        else if (strcmp(arguments[0], "delete") == 0)
+            delete(arguments);
+        else {
             systemCall(arguments);
             wait(NULL);
         }
