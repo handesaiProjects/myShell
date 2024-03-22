@@ -38,8 +38,10 @@ int main()
             mypipe(argv1, argv2);
             wait(NULL);
         } else if (appendToFile != -1 && strcmp(arguments[0], "echo") == 0) {
+            // Handle appending to a file if the command is 'echo' and '>>' is found
             handleRedirection(arguments, appendToFile, echoppend);
         } else if (overwriteFile != -1 && strcmp(arguments[0], "echo") == 0) {
+            // Handle overwriting a file if the command is 'echo' and '>' is found
             handleRedirection(arguments, overwriteFile, echorite);
         } else if (strcmp(arguments[0], "echo") == 0)
             echo(arguments);
