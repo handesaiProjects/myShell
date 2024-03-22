@@ -25,40 +25,40 @@ char **splitArgument(char *str) {
     int start = 0; // Starting index of a word
     char **arguments = (char **)malloc(size * sizeof(char *));
     int length = strlen(str);
-    
-    for (int i = 0; i <= length; i++) {
-        // Check for end of a word or end of the string
-        if (str[i] == ' ' || str[i] == '\0') {
-            // Calculate word lengthchar **splitArgument(char *str)
-{
-    // str = cp file file file
-    //[cp,file,file,file,NULL]
-    char *subStr;
-    int size = 2;
-    int index = 0;
-    subStr = strtok(str, " ");
-    char **argumnts = (char **)malloc(size * sizeof(char *));
-    *(argumnts + index) = subStr;
-    while ((subStr = strtok(NULL, " ")) != NULL)
-    {
-        size++;
-        index++;
-        *(argumnts + index) = subStr;
-        argumnts = (char **)realloc(argumnts,size * sizeof(char *));
-    }
-    *(argumnts + (index+1)) = NULL;
+    int inQuotes = 0; // Flag to check if we are inside quotes
 
-    return argumnts;
-}
+    for (int i = 0; i <= length; i++) {
+        // Toggle inQuotes flag if a quote is found
+        if (str[i] == '\"') {
+            inQuotes = !inQuotes;
+            if (inQuotes) {
+                // If we're starting a quoted word, move start past the quote
+                start = i + 1;
+            } else {
+                // If we're ending a quoted word, process it without including the ending quote
+                int wordLength = i - start;
+                if (wordLength > 0) {
+                    arguments[index] = (char *)malloc((wordLength + 1) * sizeof(char));
+                    memcpy(arguments[index], &str[start], wordLength);
+                    arguments[index][wordLength] = '\0'; // Null-terminate the word
+                    index++;
+                    size++;
+                    arguments = (char **)realloc(arguments, size * sizeof(char *));
+                }
+                start = i + 1; // Move start past the quote for the next word
+            }
+            continue; // Skip the quote processing below
+        }
+
+        // Check for end of a word or end of the string, respecting quotes
+        if ((str[i] == ' ' && !inQuotes) || str[i] == '\0') {
             int wordLength = i - start;
             if (wordLength > 0) {
-                // Allocate memory for the new word
                 arguments[index] = (char *)malloc((wordLength + 1) * sizeof(char));
                 memcpy(arguments[index], &str[start], wordLength);
                 arguments[index][wordLength] = '\0'; // Null-terminate the word
                 index++;
                 size++;
-                // Reallocate memory for the arguments array to accommodate the new word
                 arguments = (char **)realloc(arguments, size * sizeof(char *));
             }
             start = i + 1; // Move start to the next word
@@ -152,136 +152,44 @@ void echo(char **arg)
 // יש לטפל במקרים בהם מקבלים נתיב המכיל רווחים, תזכרו - נתיב כזה צריך להיות מסומן בגרשיים ולכן יש לוודא זאת ואם הוא אכן כזה
 // שמכיל סוגריים אז יש לבנות מחרוזת חדשה שאותה יש לשלוח לפונקציה שמשנה נתיב לתהליך.
 void cd(char **arg) {
-    // If the first argument starts with a quote, we need to handle spaces in the path.
-    if (arg[1][0] == '\"') {
-        char path[BUFF_SIZE] = "";
-        int i = 1;
-        // Concatenate all parts of the path until we find an argument that ends with a quote.
-        while (arg[i] != NULL && arg[i][strlen(arg[i]) - 1] != '\"') {
-            strcat(path, arg[i]);
-            strcat(path, " ");  // Add space between parts
-            i++;
-        }
-        // Add the last part of the path (the one that ends with a quote).
-        if (arg[i] != NULL) {
-            strcat(path, arg[i]);
-        }
-        // Remove the quotes from the beginning and the end of the path.
-        memmove(path, path+1, strlen(path));
-        path[strlen(path) - 1] = '\0';
-        // Change the directory
-        if (chdir(path) != 0) {
-            printf("-myShell: cd: %s: No such file or directory\n", path);
-        }
-    } else {
-        // Handle normal path (without spaces or quotes).
-        if (arg[1] != NULL && chdir(arg[1]) != 0) {
-            printf("-myShell: cd: %s: No such file or directory\n", arg[1]);
-        }
+    if (arg[1] != NULL && chdir(arg[1]) != 0) {
+        printf("-myShell: cd: %s: No such file or directory\n", arg[1]);
     }
 }
 
 
 void cp(char **arguments) {
-    char srcPath[BUFF_SIZE] = "";
-    char destPath[BUFF_SIZE] = "";
-    int i = 1;
-
-    // Handle source path with potential spaces
-    if (arguments[i][0] == '\"') {
-        // Concatenate all parts of the path until we find an argument that ends with a quote
-        while (arguments[i] != NULL && arguments[i][strlen(arguments[i]) - 1] != '\"') {
-            strcat(srcPath, arguments[i]);
-            strcat(srcPath, " "); // Add space between parts
-            i++;
-        }
-        // Add the last part of the path (the one that ends with a quote)
-        if (arguments[i] != NULL) {
-            strcat(srcPath, arguments[i]);
-            // Remove the quotes from the beginning and the end of the path
-            memmove(srcPath, srcPath + 1, strlen(srcPath));
-            srcPath[strlen(srcPath) - 1] = '\0';
-        }
-        i++; // Move to next argument
-    } else {
-        strcpy(srcPath, arguments[i++]);
-    }
-
-    // Handle destination path with potential spaces
-    if (arguments[i][0] == '\"') {
-        while (arguments[i] != NULL && arguments[i][strlen(arguments[i]) - 1] != '\"') {
-            strcat(destPath, arguments[i]);
-            strcat(destPath, " "); // Add space between parts
-            i++;
-        }
-        if (arguments[i] != NULL) {
-            strcat(destPath, arguments[i]);
-            // Remove the quotes from the beginning and the end of the path
-            memmove(destPath, destPath + 1, strlen(destPath));
-            destPath[strlen(destPath) - 1] = '\0';
-        }
-    } else {
-        strcpy(destPath, arguments[i]);
-    }
-
-    // Check if the source and destination are the same
-    if (strcmp(srcPath, destPath) == 0) {
-        printf("cp: '%s' and '%s' are the same file\n", srcPath, destPath);
+    if (strcmp(arguments[1], arguments[2]) == 0) {
+        printf("cp: '%s' and '%s' are the same file\n", arguments[1], arguments[2]);
         return;
     }
 
-    // Attempt to open the source file
-    FILE *src = fopen(srcPath, "r");
+    FILE *src = fopen(arguments[1], "r");
     if (src == NULL) {
-        printf("cp: cannot open '%s' for reading: No such file or directory\n", srcPath);
+        printf("cp: cannot open '%s' for reading: No such file or directory\n", arguments[1]);
         return;
     }
 
-    // Attempt to open/create the destination file
-    FILE *dest = fopen(destPath, "w");
+    FILE *dest = fopen(arguments[2], "w");
     if (dest == NULL) {
         fclose(src);
-        printf("cp: cannot create '%s': No such file or directory\n", destPath);
+        printf("cp: cannot create '%s': No such file or directory\n", arguments[2]);
         return;
     }
 
-    // Copy the content from source to destination
     char ch;
     while ((ch = fgetc(src)) != EOF) {
         fputc(ch, dest);
     }
 
-    // Close the files
     fclose(src);
     fclose(dest);
-    printf("File '%s' successfully copied to '%s'\n", srcPath, destPath);
+    printf("File '%s' successfully copied to '%s'\n", arguments[1], arguments[2]);
 }
 
 void delete(char **arg) {
-    char path[BUFF_SIZE] = "";
-    int i = 1;
-
-    // Handle file path with potential spaces
-    if (arg[i][0] == '\"') {
-        // Concatenate all parts of the path until we find an argument that ends with a quote
-        while (arg[i] != NULL && arg[i][strlen(arg[i]) - 1] != '\"') {
-            strcat(path, arg[i]);
-            strcat(path, " "); // Add space between parts
-            i++;
-        }
-        // Add the last part of the path (the one that ends with a quote)
-        if (arg[i] != NULL) {
-            strcat(path, arg[i]);
-            // Remove the quotes from the beginning and the end of the path
-            memmove(path, path + 1, strlen(path));
-            path[strlen(path) - 1] = '\0';
-        }
-    } else {
-        strcpy(path, arg[i]);
-    }
-
-    if (unlink(path) != 0)
-        printf("-myShell: delete: %s: No such file or directory\n", path);
+    if (unlink(arg[1]) != 0)
+        printf("-myShell: delete: %s: No such file or directory\n", arg[1]);
 }
 
 void systemCall(char **arg)
