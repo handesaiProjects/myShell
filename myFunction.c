@@ -289,6 +289,43 @@ void echoppend(char **args) {
     fclose(file);
 }
 
+void echorite(char **args) {
+    // Check if the correct number of arguments are passed
+    if (args[1] == NULL || args[2] == NULL) {
+        printf("echorite: missing required arguments\n");
+        return;
+    }
+
+    // Open the file in write mode, create if it doesn't exist, overwrite if it does
+    FILE *file = fopen(args[2], "w");
+    if (file == NULL) {
+        printf("echorite: cannot open or create '%s'\n", args[2]);
+        return;
+    }
+
+    // Write the string to the file, overwriting its content
+    fprintf(file, "%s\n", args[1]);
+
+    // Close the file after writing
+    fclose(file);
+
+    // Re-open the file in read mode to print its contents
+    file = fopen(args[2], "r");
+    if (file == NULL) {
+        printf("echorite: cannot open '%s' for reading\n", args[2]);
+        return;
+    }
+
+    // Read and print the file contents
+    char buffer[1024];
+    while (fgets(buffer, sizeof(buffer), file) != NULL) {
+        printf("%s", buffer);
+    }
+
+    // Close the file after reading
+    fclose(file);
+}
+
 
 
 // בכל שינוי יש לבצע קומיט מתאים העבודה מחייבת עבודה עם גיט.
