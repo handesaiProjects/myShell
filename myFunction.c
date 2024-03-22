@@ -187,7 +187,7 @@ void cp(char **arguments) {
     printf("File '%s' successfully copied to '%s'\n", arguments[1], arguments[2]);
 }
 
-void delete(char **arg) {
+void deleteFile(char **arg) {
     if (unlink(arg[1]) != 0)
         printf("-myShell: delete: %s: No such file or directory\n", arg[1]);
 }
@@ -247,7 +247,7 @@ void move(char **args) {
     FILE *file = fopen(args[1], "r");
     if (file != NULL) {
         fclose(file);
-        delete(args);
+        deleteFile(args);
     } else {
         printf("move: failed to copy '%s' to '%s'\n", args[1], args[2]);
     }
@@ -323,6 +323,26 @@ void echorite(char **args) {
     }
 
     // Close the file after reading
+    fclose(file);
+}
+
+void readfile(char **args) {
+    if (args[1] == NULL) {
+        printf("read: missing file operand\n");
+        return;
+    }
+
+    FILE *file = fopen(args[1], "r");
+    if (file == NULL) {
+        printf("read: cannot open '%s' for reading: No such file or directory\n", args[1]);
+        return;
+    }
+
+    char buffer[1024];
+    while (fgets(buffer, sizeof(buffer), file) != NULL) {
+        printf("%s", buffer);
+    }
+
     fclose(file);
 }
 

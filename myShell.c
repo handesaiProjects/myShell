@@ -48,9 +48,11 @@ int main()
         else if (strcmp(arguments[0], "cp") == 0)
             cp(arguments);
         else if (strcmp(arguments[0], "delete") == 0)
-            delete(arguments);
+            deleteFile(arguments);
         else if (strcmp(arguments[0], "move") == 0)
             move(arguments);
+        else if (strcmp(arguments[0], "read") == 0)
+            readfile(arguments);
         else {
             systemCall(arguments);
             wait(NULL);
