@@ -3,6 +3,50 @@
 ## Overview
 myShell is a custom shell implementation in C, designed to provide basic shell functionalities such as executing commands, handling file operations, and supporting redirection and piping. This document outlines the key features and usage of myShell.
 
+## Sequence Diagram
+
+```mermaid
+sequenceDiagram
+    participant User
+    participant myShell
+    participant myFunction
+    participant utilFunctions
+
+    User->>myShell: Start myShell
+    activate myShell
+    myShell->>myShell: welcome()
+    loop Command Loop
+        myShell->>myFunction: getInputFromUser()
+        myShell->>myFunction: splitArgument(input)
+        alt is "exit"
+            myShell->>myFunction: logout(input)
+            myShell-->>User: Logging out...
+        else is "cd"
+            myShell->>myFunction: cd(arguments)
+        else is "cp"
+            myShell->>myFunction: cp(arguments)
+        else is "delete"
+            myShell->>myFunction: deleteFile(arguments)
+        else is "move"
+            myShell->>myFunction: move(arguments)
+        else is "read"
+            myShell->>myFunction: readfile(arguments)
+        else is "wc"
+            myShell->>myFunction: wordCount(arguments)
+        else is "echo" with redirection
+            myShell->>utilFunctions: handleRedirection(arguments, redirectIndex, redirectFunction)
+            utilFunctions->>myFunction: echoppend(args) or echorite(args)
+        else is "echo"
+            myShell->>myFunction: echo(arguments)
+        else is "pipe"
+            myShell->>myFunction: mypipe(argv1, argv2)
+        else
+            myShell->>myFunction: systemCall(arguments)
+        end
+    end
+    deactivate myShell
+```
+
 ## Features
 - **Custom Welcome Message**: Displays a unique welcome message upon startup.
 - **Built-in Commands**: Includes several built-in commands like cd, cp, delete, move, read, wc (word count), echo, and more.
